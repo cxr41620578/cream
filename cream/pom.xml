@@ -24,7 +24,6 @@
     
     <modules>
            <module>cream-core</module>
-           <!-- <module>cream-admin</module> -->
            <module>cream-security</module>
            <module>cream-security-client</module>
     </modules>
