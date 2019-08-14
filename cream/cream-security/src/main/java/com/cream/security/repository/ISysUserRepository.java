@@ -33,6 +33,9 @@ public interface ISysUserRepository extends IBaseRepository<SysUser, Long> {
      * @param username
      * @return
      */
-    @Query("SELECT sr.id FROM SysUser su INNER JOIN su.sysRoles sr WHERE username = ?1")
+    @Query("SELECT sr.id FROM SysUser su INNER JOIN su.sysRoles sr WHERE su.username = ?1")
     Set<Long> findRoleIdsByUsername(String username);
+    
+    @Query("SELECT sr.id FROM SysUser su INNER JOIN su.sysRoles sr WHERE su.id = ?1")
+    Set<Long> findRoleIdsById(Long id);
 }

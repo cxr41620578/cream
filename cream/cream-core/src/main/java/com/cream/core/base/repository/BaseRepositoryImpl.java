@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 import javax.persistence.EntityManager;
 
+import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
 import com.cream.core.base.entity.Entity;
@@ -20,8 +21,8 @@ public class BaseRepositoryImpl<T extends Entity, ID extends Serializable> exten
 
     private JPAQueryFactory jpaQueryFactory;
     
-    public BaseRepositoryImpl(Class<T> domainClass, EntityManager em, JPAQueryFactory jpaQueryFactory) {
-        super(domainClass, em);
+    public BaseRepositoryImpl(JpaEntityInformation<T, ?> entityInformation, EntityManager entityManager, JPAQueryFactory jpaQueryFactory) {
+        super(entityInformation, entityManager);
         this.jpaQueryFactory = jpaQueryFactory;
     }
     

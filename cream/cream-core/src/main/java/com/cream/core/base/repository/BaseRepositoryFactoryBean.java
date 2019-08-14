@@ -9,25 +9,28 @@ import javax.persistence.EntityManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactory;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
+import org.springframework.data.jpa.repository.support.JpaRepositoryImplementation;
 import org.springframework.data.repository.core.RepositoryInformation;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
+import org.springframework.util.Assert;
 
-import com.cream.core.base.entity.BaseEntity;
+import com.cream.core.base.entity.Entity;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
 /**
  * @author cream
  *
  */
-public class BaseRepositoryFactoryBean<R extends JpaRepository<T, I>, T extends BaseEntity, I extends Serializable>
+public class BaseRepositoryFactoryBean<R extends JpaRepository<T, I>, T extends Entity, I extends Serializable>
         extends JpaRepositoryFactoryBean<R, T, I> {
     
     @Autowired
     private JPAQueryFactory jpaQueryFactory;
-    
+
     public BaseRepositoryFactoryBean(Class<? extends R> repositoryInterface) {
         super(repositoryInterface);
     }
@@ -40,18 +43,20 @@ public class BaseRepositoryFactoryBean<R extends JpaRepository<T, I>, T extends 
     // 创建一个内部类，该类不用在外部访问
     private class BaseRepositoryFactory extends JpaRepositoryFactory {
 
-        private final EntityManager em;
-
         public BaseRepositoryFactory(EntityManager em) {
             super(em);
-            this.em = em;
         }
 
         // 设置具体的实现类是BaseRepositoryImpl
-        @SuppressWarnings({ "unchecked", "rawtypes" })
         @Override
-        protected Object getTargetRepository(RepositoryInformation information) {
-            return new BaseRepositoryImpl((Class<T>) information.getDomainType(), em, jpaQueryFactory);
+        protected final JpaRepositoryImplementation<?, ?> getTargetRepository(RepositoryInformation information,
+                EntityManager entityManager) {
+            JpaEntityInformation<?, Serializable> entityInformation = this
+                    .getEntityInformation(information.getDomainType());
+            Object repository = this.getTargetRepositoryViaReflection(information,
+                    new Object[] { entityInformation, entityManager, jpaQueryFactory});
+            Assert.isInstanceOf(BaseRepositoryImpl.class, repository);
+            return (JpaRepositoryImplementation<?, ?>) repository;
         }
 
         // 设置具体的实现类的class

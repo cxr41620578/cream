@@ -62,26 +62,26 @@ public class SysPermission extends DataEntity {
      * 资源
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "resource_id")
+    @JoinColumn(name = "resourceId")
     private SysResource sysResources;
 
     /**
      * 操作
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "operation_id")
+    @JoinColumn(name = "operationId")
     private SysOperation sysOperations;
     
     /**
      * 角色集
      */
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "sys_role_permission",
+    @JoinTable(name = "sysRolePermission",
             joinColumns = {
-                    @JoinColumn(name = "permission_id", referencedColumnName = "id")
+                    @JoinColumn(name = "permissionId", referencedColumnName = "id")
             },
             inverseJoinColumns = {
-                    @JoinColumn(name = "role_id", referencedColumnName = "id")
+                    @JoinColumn(name = "roleId", referencedColumnName = "id")
             })
     private Set<SysRole> sysRoles;
 }

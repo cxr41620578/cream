@@ -17,7 +17,6 @@ import com.cream.core.base.entity.DataEntity;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
 /**
  * @author cream
@@ -25,7 +24,6 @@ import lombok.experimental.Accessors;
  */
 @Getter
 @Setter
-@Accessors(chain = true)
 @Entity
 public class SysRole extends DataEntity {
 
@@ -47,12 +45,12 @@ public class SysRole extends DataEntity {
      * 用户和角色
      */
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "sys_user_role",
+    @JoinTable(name = "sysUserRole",
             joinColumns = {
-                    @JoinColumn(name = "role_id", referencedColumnName = "id")
+                    @JoinColumn(name = "roleId", referencedColumnName = "id")
             },
             inverseJoinColumns = {
-                    @JoinColumn(name = "user_id", referencedColumnName = "id")
+                    @JoinColumn(name = "userId", referencedColumnName = "id")
             })
     private Set<SysUser> sysUsers;
     
@@ -60,12 +58,12 @@ public class SysRole extends DataEntity {
      * 角色和权限
      */
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "sys_role_permission",
+    @JoinTable(name = "sysRolePermission",
             joinColumns = {
-                    @JoinColumn(name = "role_id", referencedColumnName = "id")
+                    @JoinColumn(name = "roleId", referencedColumnName = "id")
             },
             inverseJoinColumns = {
-                    @JoinColumn(name = "permission_id", referencedColumnName = "id")
+                    @JoinColumn(name = "permissionId", referencedColumnName = "id")
             })
     private Set<SysPermission> sysPermissions;
 }

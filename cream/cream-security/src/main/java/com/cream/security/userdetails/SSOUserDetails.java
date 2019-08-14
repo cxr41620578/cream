@@ -6,7 +6,6 @@ package com.cream.security.userdetails;
 import java.util.Collection;
 
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.social.security.SocialUserDetails;
 
 import com.cream.core.CreamVersion;
@@ -20,7 +19,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public class SSOUserDetails implements UserDetails, SocialUserDetails {
+public class SSOUserDetails implements SocialUserDetails {
     
     private static final long serialVersionUID = CreamVersion.SERIAL_VERSION_UID;
 

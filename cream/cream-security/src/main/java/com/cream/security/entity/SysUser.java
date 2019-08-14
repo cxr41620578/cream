@@ -18,8 +18,9 @@ import com.cream.core.base.entity.DataEntity;
 import com.cream.core.base.enums.SexEnum;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.experimental.Accessors;
+import lombok.experimental.SuperBuilder;
 
 /**
  * @author cream
@@ -27,52 +28,53 @@ import lombok.experimental.Accessors;
  */
 @Getter
 @Setter
-@Accessors(chain = true)
+@NoArgsConstructor
+@SuperBuilder
 @Entity
 public class SysUser extends DataEntity {
-    
-    private static final long serialVersionUID = CreamVersion.SERIAL_VERSION_UID;
 
+    private static final long serialVersionUID = CreamVersion.SERIAL_VERSION_UID;
+    
     /**
      * 用户名
      */
-    @Column(nullable = false, length = 60)
+    @Column(length = 60)
     private String username;
     
     /**
      * 昵称
      */
-    @Column(nullable = false, length = 60)
+    @Column(length = 60)
     private String nickname;
     
     /**
      * 密码
      */
-    @Column(nullable = false, columnDefinition = "CHAR(60)")
+    @Column(columnDefinition = "CHAR(60)")
     private String userPassword;
     
     /**
      * 电话
      */
-    @Column(nullable = false, length = 20)
+    @Column(length = 20)
     private String phone;
     
     /**
      * 邮箱
      */
-    @Column(nullable = false, length = 50)
+    @Column(length = 50)
     private String email;
     
     /**
      * 性别
      */
-    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    @Column(columnDefinition = "TINYINT(1)")
     private SexEnum sex;
     
     /**
      * 头像图片路径
      */
-    @Column(nullable = false, length = 255)
+    @Column(length = 255)
     private String headImgUrl;
     
     /**
@@ -124,12 +126,12 @@ public class SysUser extends DataEntity {
     private Boolean isEnabled;
     
     @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "sys_user_role",
+    @JoinTable(name = "sysUserRole",
             joinColumns = {
-                    @JoinColumn(name = "user_id", referencedColumnName = "id")
+                    @JoinColumn(name = "userId", referencedColumnName = "id")
             },
             inverseJoinColumns = {
-                    @JoinColumn(name = "role_id", referencedColumnName = "id")
+                    @JoinColumn(name = "roleId", referencedColumnName = "id")
             })
     private Set<SysRole> sysRoles;
 }

@@ -33,7 +33,7 @@ public class TransactionAdviceConfig {
     /**
      * 事物超时时间 秒
      */
-    private static final int TX_METHOD_TIMEOUT = 10;
+    private static final int TX_METHOD_TIMEOUT = 1000;
     
     private static final String AOP_POINTCUT_EXPRESSION = "execution(public * com.cream..service.impl.*ServiceImpl.*(..))";
     
@@ -57,12 +57,15 @@ public class TransactionAdviceConfig {
         NameMatchTransactionAttributeSource source = new NameMatchTransactionAttributeSource();
         Map<String, TransactionAttribute> txMap = new HashMap<>();
         txMap.put("get*", readOnlyTx);
+        txMap.put("find*", readOnlyTx);
         txMap.put("list*", readOnlyTx);
         txMap.put("count*", readOnlyTx);
         txMap.put("page*", readOnlyTx);
         txMap.put("save*", requiredTx);
         txMap.put("remove*", requiredTx);
+        txMap.put("delete*", requiredTx);
         txMap.put("update*", requiredTx);
+        txMap.put("*", requiredTx);
         source.setNameMap(txMap);
         return new TransactionInterceptor(transactionManager, source);
     }

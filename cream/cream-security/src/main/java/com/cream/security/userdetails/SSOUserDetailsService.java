@@ -57,8 +57,12 @@ public class SSOUserDetailsService implements UserDetailsService, SocialUserDeta
         } else {
             long id = Long.parseLong(userId);
             UserPayload userProjection = sysUserService.getById(id);
+            Set<Long> roleIds = sysUserService.findRoleIdsById(id);
             Set<GrantedAuthority> grantedAuthoritys = new HashSet<GrantedAuthority>();
-            return new SSOUserDetails(grantedAuthoritys, userProjection.getId(), userProjection.getUsername(),
+            roleIds.forEach(v -> {
+                grantedAuthoritys.add(new SimpleGrantedAuthority("ROLE_" + v));
+            });
+            return new SSOUserDetails(grantedAuthoritys, userProjection.getId(), userProjection.getUsername() == null ? "" : userProjection.getUsername(),
                     userProjection.getUserPassword(), userProjection.getIsTurnOnCaptcha(), userProjection.getIsAccountNonExpired(),
                     userProjection.getIsAccountNonLocked(), userProjection.getIsCredentialsNonExpired(), userProjection.getIsEnabled());
         }

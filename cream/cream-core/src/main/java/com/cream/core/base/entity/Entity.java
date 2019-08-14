@@ -9,17 +9,10 @@ import javax.persistence.MappedSuperclass;
 
 import com.cream.core.CreamVersion;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
-
 /**
  * @author cream
  *
  */
-@Getter
-@Setter
-@Accessors(chain = true)
 @MappedSuperclass
 public class Entity implements Serializable {
 

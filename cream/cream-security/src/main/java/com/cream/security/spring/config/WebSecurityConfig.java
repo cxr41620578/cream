@@ -36,6 +36,9 @@ import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.security.web.authentication.session.CompositeSessionAuthenticationStrategy;
+import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
+import org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.session.InvalidSessionStrategy;
 import org.springframework.security.web.session.SessionInformationExpiredStrategy;
@@ -43,6 +46,7 @@ import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.session.security.SpringSessionBackedSessionRegistry;
 import org.springframework.session.security.web.authentication.SpringSessionRememberMeServices;
+import org.springframework.social.security.SpringSocialConfigurer;
 
 import com.cream.security.access.SSOFilterInvocationSecurityMetadataSource;
 import com.cream.security.authentication.SSOAuthenticationFilter;
@@ -57,7 +61,6 @@ import com.cream.security.service.ISysUserService;
 import com.cream.security.userdetails.SSOUserDetailsService;
 import com.cream.security.web.session.SSOInvalidSessionStrategy;
 import com.cream.security.web.session.SSOSessionInformationExpiredStrategy;
-import com.cream.social.security.SSOSpringSocialConfigurer;
 
 /**
  * @author cream
@@ -81,9 +84,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Resource
     private FindByIndexNameSessionRepository<Session> sessionRepository;
-    
-    @Autowired
-    private SSOSpringSocialConfigurer ssoSpringSocialConfigurer;
 
     /**
      * 权限不足处理器
@@ -257,6 +257,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable().sessionManagement().invalidSessionStrategy(this.invalidSessionStrategy())
+                //ConcurrentSessionControlAuthenticationStrategy
+                .sessionAuthenticationStrategy(new CompositeSessionAuthenticationStrategy(Arrays.asList(new SessionFixationProtectionStrategy())))
+                .sessionFixation().migrateSession()
                 .sessionCreationPolicy(SessionCreationPolicy.NEVER).maximumSessions(securityConfig.getMaximumSessions())// 达到最大数禁止登录（预防并发登录
                 .maxSessionsPreventsLogin(securityConfig.isMaxSessionsPreventsLogin())
                 .expiredSessionStrategy(this.sessionInformationExpiredStrategy())
@@ -268,9 +271,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // securityConfig.getAnonMatchers().toArray(new
                 // String[securityConfig.getAnonMatchers().size()])
                 // ).permitAll()
-                .antMatchers(HttpMethod.GET, securityConfig.getLoginUrl(), securityConfig.getLoginSuccessUrl(),
+                .antMatchers(HttpMethod.GET, securityConfig.getLoginUrl(), // securityConfig.getLoginSuccessUrl(),
                         securityConfig.getLoginErrorUrl(), securityConfig.getLogoutUrl(),
-                        securityConfig.getLogoutSuccessUrl(), "/", "/index")
+                        securityConfig.getLogoutSuccessUrl(), "/", "/index", "/error")
                 // ignoring
                 .permitAll() // 对于获取token的rest api要允许匿名访问
                 .accessDecisionManager(accessDecisionManager())
@@ -289,7 +292,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutUrl(securityConfig.getLogoutUrl()).logoutSuccessUrl(securityConfig.getLogoutSuccessUrl())
                 .permitAll().and().rememberMe().rememberMeServices(rememberMeServices).and()
                 .addFilterAt(this.ssoAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .apply(ssoSpringSocialConfigurer);
+                .apply(new SpringSocialConfigurer());
     }
 
     @Override

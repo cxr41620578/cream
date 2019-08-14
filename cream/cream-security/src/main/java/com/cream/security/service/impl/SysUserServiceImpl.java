@@ -39,4 +39,9 @@ public class SysUserServiceImpl extends BaseServiceImpl<ISysUserRepository, SysU
     public void register(SysUser sysUser) {
         baseRepository.save(sysUser);
     }
+
+    @Override
+    public Set<Long> findRoleIdsById(Long id) {
+        return baseRepository.findRoleIdsById(id);
+    }
 }

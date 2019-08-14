@@ -50,13 +50,13 @@ public class SysResource extends DataEntity {
      * 父资源
      */
     @ManyToOne
-    @JoinColumn(name = "parent_id")
+    @JoinColumn(name = "parentId")
     private SysResource parentResource;
 
     /**
      * 子资源
      */
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id")
+    @JoinColumn(name = "parentId")
     private Set<SysResource> childrenResource;
 }

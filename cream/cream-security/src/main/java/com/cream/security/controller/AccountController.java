@@ -26,4 +26,9 @@ public class AccountController {
     public String login() {
         return "login";
     }
+    
+    @GetMapping("/login/error")
+    public String loginError() {
+        return "error";
+    }
 }

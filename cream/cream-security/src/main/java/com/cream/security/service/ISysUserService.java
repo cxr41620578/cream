@@ -31,5 +31,7 @@ public interface ISysUserService extends IBaseService<SysUser, Long> {
      */
     Set<Long> findRoleIdsByUsername(String username);
     
+    Set<Long> findRoleIdsById(Long id);
+    
     void register(SysUser sysUser);
 }

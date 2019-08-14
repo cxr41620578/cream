@@ -33,7 +33,6 @@ public class SSOUrlAuthenticationEntryPoint extends LoginUrlAuthenticationEntryP
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
             AuthenticationException authException) throws IOException, ServletException {
-        System.out.println(request.getSession(false));
         if (HttpUtils.isAjaxRequest(request)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             HttpUtils.writeJson(response,
@@ -41,6 +40,5 @@ public class SSOUrlAuthenticationEntryPoint extends LoginUrlAuthenticationEntryP
         } else {
             super.commence(request, response, authException);
         }
-        System.out.println(request.getSession(false));
     }
 }

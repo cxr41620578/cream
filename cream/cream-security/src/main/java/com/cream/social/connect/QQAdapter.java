@@ -30,7 +30,6 @@ public class QQAdapter implements ApiAdapter<QQ> {
     @Override
     public void setConnectionValues(QQ qq, ConnectionValues values) {
         QQUser profile = qq.userOperations().getUserInfo();
-        values.setProviderUserId(profile.getOpenId());
         values.setDisplayName(profile.getNickname());
         values.setProfileUrl(null);
         values.setImageUrl(profile.getFigureurl_qq_1());

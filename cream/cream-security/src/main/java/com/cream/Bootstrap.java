@@ -3,9 +3,11 @@
  */
 package com.cream;
 
+import org.hibernate.id.BulkInsertionCapableIdentifierGenerator;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.social.facebook.config.support.FacebookApiHelper;
 
@@ -31,6 +33,10 @@ public class Bootstrap implements CommandLineRunner {
 //        AbstractOAuth2ApiBinding
 //        ConnectController;
 //        ProviderSignInController
+//        WebSecurityConfiguration;
+//        SocialConfiguration
+//        CompositeNestedGeneratedValueGenerator;
+//        BulkInsertionCapableIdentifierGenerator
         SpringApplication.run(Bootstrap.class, args);
     }
 
