@@ -20,7 +20,7 @@ import com.cream.core.singleton.JacksonSingletonEnum;
 import com.cream.core.utils.HttpUtils;
 
 /**
- * 权限处理器
+ * 拒绝访问处理器
  * 
  * @author cream
  *

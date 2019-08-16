@@ -28,7 +28,6 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-import com.cream.security.authentication.SSOAuthenticationToken;
 import com.cream.security.entity.SysUser;
 
 /**
@@ -104,27 +103,27 @@ public class TestController {
                 Session s = sessionRepository.findById(session);
                 SecurityContext securityContext = (SecurityContextImpl) s.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
                 
-                SSOAuthenticationToken result = new SSOAuthenticationToken(securityContext.getAuthentication().getPrincipal(), securityContext.getAuthentication().getCredentials(),
-                        "777", null);
-                result.setDetails(securityContext.getAuthentication().getDetails());
-                System.out.println(((SSOAuthenticationToken)securityContext.getAuthentication()).getCaptcha());
-                securityContext.setAuthentication(result);
-                
-                s.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
-                sessionRepository.save(s);
-                System.out.println("---");
-                System.out.println(((SSOAuthenticationToken)securityContext.getAuthentication()).getCaptcha());
+//                SSOAuthenticationToken result = new SSOAuthenticationToken(securityContext.getAuthentication().getPrincipal(), securityContext.getAuthentication().getCredentials(),
+//                        "777", null);
+//                result.setDetails(securityContext.getAuthentication().getDetails());
+//                System.out.println(((SSOAuthenticationToken)securityContext.getAuthentication()).getCaptcha());
+//                securityContext.setAuthentication(result);
+//                
+//                s.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, securityContext);
+//                sessionRepository.save(s);
+//                System.out.println("---");
+//                System.out.println(((SSOAuthenticationToken)securityContext.getAuthentication()).getCaptcha());
                 
             }
             System.out.println("---!!!---");
             SecurityContext securityContext = (SecurityContextImpl) mySession.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
-            SSOAuthenticationToken result = new SSOAuthenticationToken(securityContext.getAuthentication().getPrincipal(), securityContext.getAuthentication().getCredentials(),
-                    "555", securityContext.getAuthentication().getAuthorities());
-            result.setDetails(securityContext.getAuthentication().getDetails());
-            System.out.println(((SSOAuthenticationToken)securityContext.getAuthentication()).getCaptcha());
-            securityContext.setAuthentication(result);
-            System.out.println("---");
-            System.out.println(((SSOAuthenticationToken)securityContext.getAuthentication()).getCaptcha());
+//            SSOAuthenticationToken result = new SSOAuthenticationToken(securityContext.getAuthentication().getPrincipal(), securityContext.getAuthentication().getCredentials(),
+//                    "555", securityContext.getAuthentication().getAuthorities());
+//            result.setDetails(securityContext.getAuthentication().getDetails());
+//            System.out.println(((SSOAuthenticationToken)securityContext.getAuthentication()).getCaptcha());
+//            securityContext.setAuthentication(result);
+//            System.out.println("---");
+//            System.out.println(((SSOAuthenticationToken)securityContext.getAuthentication()).getCaptcha());
             return "test2";
         } catch (Exception e) {
             e.printStackTrace();

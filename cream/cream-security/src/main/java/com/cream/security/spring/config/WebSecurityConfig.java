@@ -9,6 +9,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.http.HttpMethod;
@@ -16,7 +17,7 @@ import org.springframework.security.access.AccessDecisionManager;
 import org.springframework.security.access.AccessDecisionVoter;
 import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.access.vote.UnanimousBased;
-import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,11 +34,9 @@ import org.springframework.security.web.access.intercept.FilterSecurityIntercept
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.RememberMeServices;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.security.web.authentication.session.CompositeSessionAuthenticationStrategy;
-import org.springframework.security.web.authentication.session.RegisterSessionAuthenticationStrategy;
 import org.springframework.security.web.authentication.session.SessionFixationProtectionStrategy;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.session.InvalidSessionStrategy;
@@ -49,8 +48,7 @@ import org.springframework.session.security.web.authentication.SpringSessionReme
 import org.springframework.social.security.SpringSocialConfigurer;
 
 import com.cream.security.access.SSOFilterInvocationSecurityMetadataSource;
-import com.cream.security.authentication.SSOAuthenticationFilter;
-import com.cream.security.authentication.dao.SSODaoAuthenticationProvider;
+import com.cream.security.authentication.captcha.SpringSecurityCaptchaConfigurer;
 import com.cream.security.handler.SSOLoginFailureHandler;
 import com.cream.security.handler.SSOLoginSuccessHandler;
 import com.cream.security.handler.SSOLogoutSuccessHandler;
@@ -215,13 +213,13 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
      * 
      * @return
      */
-    public AuthenticationProvider authenticationProvider() {
-        SSODaoAuthenticationProvider ssoDaoAuthenticationProvider = new SSODaoAuthenticationProvider();
-        ssoDaoAuthenticationProvider.setPasswordEncoder(this.passwordEncoder());
-        ssoDaoAuthenticationProvider.setUserDetailsService(this.userDetailsService());
-        ssoDaoAuthenticationProvider.setMessageSource(this.reloadableResourceBundleMessageSource());
-        return ssoDaoAuthenticationProvider;
-    }
+//    public AuthenticationProvider authenticationProvider() {
+//        SSODaoAuthenticationProvider ssoDaoAuthenticationProvider = new SSODaoAuthenticationProvider();
+//        ssoDaoAuthenticationProvider.setPasswordEncoder(this.passwordEncoder());
+//        ssoDaoAuthenticationProvider.setUserDetailsService(this.userDetailsService());
+//        ssoDaoAuthenticationProvider.setMessageSource(this.reloadableResourceBundleMessageSource());
+//        return ssoDaoAuthenticationProvider;
+//    }
 
     /**
      * 定义权限决策管理器 -新增role投票器 -默认为一票通过，这里改为全票通过
@@ -244,15 +242,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         return httpSessionRequestCache;
     }
 
-    public SSOAuthenticationFilter ssoAuthenticationFilter() throws Exception {
-        SSOAuthenticationFilter ssoAuthenticationFilter = new SSOAuthenticationFilter(securityConfig.getLoginUrl(),
-                HttpMethod.POST.name());
-        ssoAuthenticationFilter.setAuthenticationManager(this.authenticationManagerBean());
-        ssoAuthenticationFilter.setAuthenticationSuccessHandler(this.authenticationSuccessHandler());
-        ssoAuthenticationFilter.setAuthenticationFailureHandler(this.authenticationFailureHandler());
-        ssoAuthenticationFilter.setRememberMeServices(rememberMeServices);
-        return ssoAuthenticationFilter;
-    }
+//    public SSOAuthenticationFilter ssoAuthenticationFilter() throws Exception {
+//        SSOAuthenticationFilter ssoAuthenticationFilter = new SSOAuthenticationFilter(securityConfig.getLoginUrl(),
+//                HttpMethod.POST.name());
+//        ssoAuthenticationFilter.setAuthenticationManager(this.authenticationManagerBean());
+//        ssoAuthenticationFilter.setAuthenticationSuccessHandler(this.authenticationSuccessHandler());
+//        ssoAuthenticationFilter.setAuthenticationFailureHandler(this.authenticationFailureHandler());
+//        ssoAuthenticationFilter.setRememberMeServices(rememberMeServices);
+//        return ssoAuthenticationFilter;
+//    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -291,12 +289,34 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout().addLogoutHandler(this.logoutHandler()).logoutSuccessHandler(this.logoutSuccessHandler())
                 .logoutUrl(securityConfig.getLogoutUrl()).logoutSuccessUrl(securityConfig.getLogoutSuccessUrl())
                 .permitAll().and().rememberMe().rememberMeServices(rememberMeServices).and()
-                .addFilterAt(this.ssoAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
-                .apply(new SpringSocialConfigurer());
-    }
+                .formLogin().successHandler(this.authenticationSuccessHandler())
+                .failureHandler(this.authenticationFailureHandler())
+                .loginPage(securityConfig.getLoginUrl())
+                .and()
+//              ssoAuthenticationFilter.setAuthenticationManager(this.authenticationManagerBean());
+//              ssoAuthenticationFilter.setAuthenticationSuccessHandler(this.authenticationSuccessHandler());
+//              ssoAuthenticationFilter.setAuthenticationFailureHandler(this.authenticationFailureHandler());
+//              ssoAuthenticationFilter.setRememberMeServices(rememberMeServices);
 
+//              ssoDaoAuthenticationProvider.setPasswordEncoder(this.passwordEncoder());
+//              ssoDaoAuthenticationProvider.setUserDetailsService(this.userDetailsService());
+//              ssoDaoAuthenticationProvider.setMessageSource(this.reloadableResourceBundleMessageSource());
+//                .authenticationProvider(this.authenticationProvider())
+                .apply(new SpringSocialConfigurer())
+                .and().apply(new SpringSecurityCaptchaConfigurer());
+    }
+    
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.authenticationProvider(this.authenticationProvider());
+        auth.userDetailsService(this.userDetailsService()).passwordEncoder(this.passwordEncoder())
+        .withObjectPostProcessor(new ObjectPostProcessor<DaoAuthenticationProvider>() {
+            @Override
+            public <O extends DaoAuthenticationProvider> O postProcess(O object) {
+                ReloadableResourceBundleMessageSource reloadableResourceBundleMessageSource = new ReloadableResourceBundleMessageSource();
+                reloadableResourceBundleMessageSource.setBasename("classpath:/security/messages");
+                object.setMessageSource(reloadableResourceBundleMessageSource);
+                return object;
+            }
+        });
     }
 }
