@@ -8,9 +8,11 @@ import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.social.security.SocialUser;
 import org.springframework.social.security.SocialUserDetails;
 import org.springframework.social.security.SocialUserDetailsService;
 import org.springframework.stereotype.Service;
@@ -44,9 +46,7 @@ public class SSOUserDetailsService implements UserDetailsService, SocialUserDeta
             roleIds.forEach(id -> {
                 grantedAuthoritys.add(new SimpleGrantedAuthority("ROLE_" + id));
             });
-            return new SSOUserDetails(grantedAuthoritys, userProjection.getId(), username,
-                    userProjection.getUserPassword(), userProjection.getIsTurnOnCaptcha(), userProjection.getIsAccountNonExpired(),
-                    userProjection.getIsAccountNonLocked(), userProjection.getIsCredentialsNonExpired(), userProjection.getIsEnabled());
+            return new User(String.valueOf(userProjection.getId()), userProjection.getUserPassword(), grantedAuthoritys);
         }
     }
 
@@ -62,9 +62,7 @@ public class SSOUserDetailsService implements UserDetailsService, SocialUserDeta
             roleIds.forEach(v -> {
                 grantedAuthoritys.add(new SimpleGrantedAuthority("ROLE_" + v));
             });
-            return new SSOUserDetails(grantedAuthoritys, userProjection.getId(), userProjection.getUsername() == null ? "" : userProjection.getUsername(),
-                    userProjection.getUserPassword(), userProjection.getIsTurnOnCaptcha(), userProjection.getIsAccountNonExpired(),
-                    userProjection.getIsAccountNonLocked(), userProjection.getIsCredentialsNonExpired(), userProjection.getIsEnabled());
+            return new SocialUser(String.valueOf(userProjection.getId()), userProjection.getUserPassword(), grantedAuthoritys);
         }
     }
 }

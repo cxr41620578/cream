@@ -35,15 +35,12 @@ public class SysUserConnectionServiceImpl extends BaseServiceImpl<ISysUserConnec
         if (CollectionUtils.isEmpty(userIdList) && connectionSignUp != null) {
             String newUserId = connectionSignUp.execute(connection);
             if (newUserId != null) {
-                SysUser sysUser = new SysUser();
-                sysUser.setId(Long.valueOf(newUserId));
-                sysUser.setIsTurnOnCaptcha(false);
                 SysUserConnection sysUserConnection = new SysUserConnection();
                 sysUserConnection.setProviderId(connection.getKey().getProviderId());
                 sysUserConnection.setProviderUserId(connection.getKey().getProviderUserId());
+                sysUserConnection.setUserId(Long.valueOf(newUserId));
                 ConnectionData connectionData = connection.createData();
                 sysUserConnection.setAccessToken(connectionData.getAccessToken());
-                sysUserConnection.setSysUser(sysUser);
                 baseRepository.insertOne(sysUserConnection);
                 return Arrays.asList(newUserId);
             }

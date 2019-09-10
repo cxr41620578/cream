@@ -8,6 +8,17 @@ spring:
           name: user_session
         timeout: 1800
   thymeleaf: cache=false
+  # 设定ftl文件路径
+  freemarker:
+     template-loader-path: classpath:/templates
+     cache: false
+     charset: UTF-8
+     check-template-location: true
+     content-type: text/html
+     expose-request-attributes: false
+     expose-session-attributes: false
+     request-context-attribute: request
+     suffix: .ftl
   datasource:
     url: jdbc:mysql://localhost:3306/cream?characterEncoding=utf8&useSSL=false&useAffectedRows=true&serverTimezone=GMT%2B8
     userName: root
@@ -66,6 +77,9 @@ spring:
     loginInformationExpiredUrl: /account/login
     isMaxSessionsPreventsLogin: false
     maximumSessions: 1
+  mobile:
+    sitepreference:
+      enabled: true
   social:
     qq:
       client-id: 101561408

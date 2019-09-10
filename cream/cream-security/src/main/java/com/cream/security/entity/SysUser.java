@@ -95,36 +95,6 @@ public class SysUser extends DataEntity {
     @Column(length = 15)
     private String lastLoginIp;
     
-    /**
-     * 是否开启验证码验证
-     */
-    @Column
-    private Boolean isTurnOnCaptcha;
-
-    /**
-     * 账户是否过期,过期无法验证
-     */
-    @Column
-    private Boolean isAccountNonExpired;
-
-    /**
-     * 指定用户是否被锁定或者解锁,锁定的用户无法进行身份验证
-     */
-    @Column
-    private Boolean isAccountNonLocked;
-
-    /**
-     * 指示是否已过期的用户的凭据(密码),过期的凭据防止认证
-     */
-    @Column
-    private Boolean isCredentialsNonExpired;
-
-    /**
-     * 是否被禁用,禁用的用户不能身份验证
-     */
-    @Column
-    private Boolean isEnabled;
-    
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "sysUserRole",
             joinColumns = {

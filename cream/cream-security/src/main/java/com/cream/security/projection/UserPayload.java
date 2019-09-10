@@ -17,14 +17,4 @@ public interface UserPayload {
     String getUserPassword();
 
     String getUsername();
-    
-    boolean getIsTurnOnCaptcha();
-
-    boolean getIsAccountNonExpired();
-
-    boolean getIsAccountNonLocked();
-
-    boolean getIsCredentialsNonExpired();
-
-    boolean getIsEnabled();
 }
