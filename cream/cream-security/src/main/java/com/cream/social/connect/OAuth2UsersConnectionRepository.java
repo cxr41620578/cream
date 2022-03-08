@@ -16,7 +16,7 @@ import org.springframework.social.connect.UsersConnectionRepository;
 import com.cream.social.service.ISysUserConnectionService;
 
 /**
- * @author v-chenxr04
+ * @author cream
  *
  */
 public class OAuth2UsersConnectionRepository implements UsersConnectionRepository {

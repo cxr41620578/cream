@@ -27,7 +27,7 @@ public class SysUserServiceImpl extends BaseServiceImpl<ISysUserRepository, SysU
     
     @Override
     public UserPayload getById(Long id) {
-        return baseRepository.getById(id);
+        return baseRepository.getById(id, UserPayload.class);
     }
 
     @Override

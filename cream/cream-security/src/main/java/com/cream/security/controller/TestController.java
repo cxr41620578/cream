@@ -21,6 +21,8 @@ import org.springframework.session.FindByIndexNameSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.session.SessionRepository;
 import org.springframework.session.data.redis.RedisOperationsSessionRepository;
+import org.springframework.social.connect.Connection;
+import org.springframework.social.security.SocialAuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,6 +31,10 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 import com.cream.security.entity.SysUser;
+import com.cream.security.util.SecurityUserUtils;
+
+import pers.cream.spring.social.api.QQ;
+import pers.cream.spring.social.config.QQApiHelper;
 
 /**
  * @author cream
@@ -43,6 +49,9 @@ public class TestController {
     
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+
+    @Autowired
+    private QQApiHelper qqApiHelper;
     
     @GetMapping("/")
     public String index() {
@@ -56,6 +65,7 @@ public class TestController {
 
     @GetMapping("/aaa")
     public String aaa() {
+        System.out.println(qqApiHelper.getApi().userOperations().getUserInfo());
         return "aaa!!!1";
     }
     

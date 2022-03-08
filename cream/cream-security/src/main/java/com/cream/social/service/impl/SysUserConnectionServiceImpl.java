@@ -56,17 +56,17 @@ public class SysUserConnectionServiceImpl extends BaseServiceImpl<ISysUserConnec
 
     @Override
     public List<ISelectFromUserConnection> findAllByUserId(Long userId) {
-        return baseRepository.findAllByUserId(userId);
+        return baseRepository.findByUserIdOrderByProviderIdAscRank(userId);
     }
 
     @Override
     public List<ISelectFromUserConnection> findByUserIdAndProviderId(Long userId, String providerId) {
-        return baseRepository.findByUserIdAndProviderId(userId, providerId);
+        return baseRepository.findByUserIdAndProviderIdOrderByRank(userId, providerId);
     }
 
     @Override
     public ISelectFromUserConnection getById(SysUserConnectionKey sysUserConnectionKey) {
-        return baseRepository.getOne(sysUserConnectionKey);
+        return baseRepository.findPayloadByUserIdAndProviderIdAndProviderUserId(sysUserConnectionKey.getUserId(), sysUserConnectionKey.getProviderId(), sysUserConnectionKey.getProviderUserId());
     }
 
     @Override

@@ -58,7 +58,7 @@ public class BaseServiceImpl<R extends IBaseRepository<T, ID>, T extends Entity,
 
     @Override
     public void delete(T entity) {
-        baseRepository.delete(entity);        
+        baseRepository.delete(entity);
     }
 
     @Override

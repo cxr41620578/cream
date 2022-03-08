@@ -60,7 +60,7 @@ public class SysUserConnection extends Entity {
     @JoinColumn(name = "userId")
     private SysUser sysUser;
     
-    @Column(nullable = false)
+    @Column(nullable = false, name = "[rank]")
     private Integer rank;
     
     @Column(length = 255)

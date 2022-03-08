@@ -26,12 +26,16 @@ public class SysPermissionServiceImpl extends BaseServiceImpl<ISysPermissionRepo
 
     @Cacheable(value = ROLE_ID_SET_OF_PERMISSION, key = "#httpUrl.concat(':').concat(#httpMethod)")
     @Override
-    public Set<Long> findByUrlAndHttpMethod(String httpUrl, String httpMethod) {
-        return baseRepository.findByHttpUrlAndHttpMethod(httpUrl, httpMethod);
+    public Set<Long> findRoleIdByHttpUrlAndHttpMethod(String httpUrl, String httpMethod) {
+        return baseRepository.findRoleIdByHttpUrlAndHttpMethod(httpUrl, httpMethod);
+    }
+
+    public List<SysPermission> findRoleAll() {
+        return baseRepository.findRoleAll();
     }
 
     @Override
-    public List<SysPermission> findRoleAll() {
-        return baseRepository.findRoleAll();
+    public Set<Long> findAllRoleId() {
+        return baseRepository.findAllRoleId();
     }
 }

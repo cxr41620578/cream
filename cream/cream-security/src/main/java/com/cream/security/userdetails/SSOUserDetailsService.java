@@ -39,15 +39,17 @@ public class SSOUserDetailsService implements UserDetailsService, SocialUserDeta
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         if (username == null) {
             throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
-        } else {
-            UserPayload userProjection = sysUserService.findByUsername(username);
-            Set<Long> roleIds = sysUserService.findRoleIdsByUsername(username);
-            Set<GrantedAuthority> grantedAuthoritys = new HashSet<GrantedAuthority>();
-            roleIds.forEach(id -> {
-                grantedAuthoritys.add(new SimpleGrantedAuthority("ROLE_" + id));
-            });
-            return new User(String.valueOf(userProjection.getId()), userProjection.getUserPassword(), grantedAuthoritys);
         }
+        UserPayload userProjection = sysUserService.findByUsername(username);
+        if (userProjection == null) {
+            throw new UsernameNotFoundException(String.format("No user found with username '%s'.", username));
+        }
+        Set<Long> roleIds = sysUserService.findRoleIdsByUsername(username);
+        Set<GrantedAuthority> grantedAuthoritys = new HashSet<GrantedAuthority>();
+        roleIds.forEach(id -> {
+            grantedAuthoritys.add(new SimpleGrantedAuthority("ROLE_" + id));
+        });
+        return new User(String.valueOf(userProjection.getId()), userProjection.getUserPassword(), grantedAuthoritys);
     }
 
     @Override

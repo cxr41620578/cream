@@ -14,8 +14,10 @@ import com.cream.security.entity.SysPermission;
  *
  */
 public interface ISysPermissionService extends IBaseService<SysPermission, Long> {
-    
-    Set<Long> findByUrlAndHttpMethod(String url, String httpMethod);
+
+    Set<Long> findRoleIdByHttpUrlAndHttpMethod(String url, String httpMethod);
+
+    Set<Long> findAllRoleId();
 
     List<SysPermission> findRoleAll();
 }

@@ -22,6 +22,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -86,6 +87,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // 登录失败处理器
         SSOLoginFailureHandler authenticationFailureHandler = new SSOLoginFailureHandler();
         authenticationFailureHandler.setDefaultFailureUrl(securityConfig.getLoginErrorUrl());
+        authenticationFailureHandler.setUseForward(true);
+        authenticationFailureHandler.setAllowSessionCreation(false);
         // 未登录指向器，转发或重定向登录页面
         AuthenticationEntryPoint authenticationEntryPoint = new SSOUrlAuthenticationEntryPoint(
                 securityConfig.getLoginUrl());
@@ -101,9 +104,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // 集成spring session
         SpringSessionBackedSessionRegistry<Session> sessionRegistry = new SpringSessionBackedSessionRegistry<Session>(
                 this.sessionRepository);
-        // 国际化
-        ReloadableResourceBundleMessageSource reloadableResourceBundleMessageSource = new ReloadableResourceBundleMessageSource();
-        reloadableResourceBundleMessageSource.setBasename("classpath:/security/messages");
         // 定义权限决策管理器 -新增role投票器 -默认为一票通过，这里改为全票通过
         List<AccessDecisionVoter<? extends Object>> decisionVoters = Arrays.asList(new WebExpressionVoter(),
                 new RoleVoter());
@@ -111,8 +111,56 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // 不自动创建session
 //        HttpSessionRequestCache httpSessionRequestCache = new HttpSessionRequestCache();
 //        httpSessionRequestCache.setCreateSessionAllowed(false);
-
+        
+        // session配置
         http.csrf().disable().sessionManagement().invalidSessionStrategy(invalidSessionStrategy)
+        .sessionAuthenticationStrategy(new CompositeSessionAuthenticationStrategy(
+                Arrays.asList(new SessionFixationProtectionStrategy())))
+        .sessionFixation().migrateSession().sessionCreationPolicy(SessionCreationPolicy.NEVER)
+        .maximumSessions(securityConfig.getMaximumSessions())// 达到最大数禁止登录（预防并发登录
+        .maxSessionsPreventsLogin(securityConfig.isMaxSessionsPreventsLogin())
+        .expiredSessionStrategy(sessionInformationExpiredStrategy)
+        .sessionRegistry(sessionRegistry);
+        
+        // 权限配置
+        http.exceptionHandling().accessDeniedHandler(accessDeniedHandler)
+        .authenticationEntryPoint(authenticationEntryPoint);
+        
+        // url访问管理
+        http.authorizeRequests()
+        .antMatchers(HttpMethod.GET, securityConfig.getLoginUrl(), // securityConfig.getLoginSuccessUrl(),
+                securityConfig.getLoginErrorUrl(), securityConfig.getLogoutUrl(),
+                securityConfig.getLogoutSuccessUrl(), "/", "/index", "/error")
+        .permitAll()
+        .accessDecisionManager(accessDecisionManager)
+        .withObjectPostProcessor(new ObjectPostProcessor<FilterSecurityInterceptor>() {
+            @Override
+            public <O extends FilterSecurityInterceptor> O postProcess(O object) {
+                object.setSecurityMetadataSource(new SSOFilterInvocationSecurityMetadataSource(
+                        sysPermissionService, object.getSecurityMetadataSource()));
+                return object;
+            }
+        })
+        .anyRequest().authenticated();
+        
+        // login logout remember me 配置
+        http.formLogin()
+        .successHandler(authenticationSuccessHandler)
+        .failureHandler(authenticationFailureHandler)
+        .loginPage(securityConfig.getLoginUrl())
+        .and()
+        .logout().logoutSuccessHandler(logoutSuccessHandler).logoutUrl(securityConfig.getLogoutUrl())
+        .logoutSuccessUrl(securityConfig.getLogoutSuccessUrl()).permitAll()
+        .and()
+        .rememberMe()
+        .rememberMeServices(rememberMeServices);
+        
+        // 额外配置
+        http.apply(new SpringSocialConfigurer())
+        .and()
+        .apply(new SpringSecurityCaptchaConfigurer());
+
+        /* http.csrf().disable().sessionManagement().invalidSessionStrategy(invalidSessionStrategy)
                 .sessionAuthenticationStrategy(new CompositeSessionAuthenticationStrategy(
                         Arrays.asList(new SessionFixationProtectionStrategy())))
                 .sessionFixation().migrateSession().sessionCreationPolicy(SessionCreationPolicy.NEVER)
@@ -139,15 +187,25 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                                 sysPermissionService, object.getSecurityMetadataSource()));
                         return object;
                     }
-                }).anyRequest().authenticated().and() // 除上面外的所有请求全部需要鉴权认证
+                })
+                .anyRequest().authenticated().and() // 除上面外的所有请求全部需要鉴权认证
 //                .requestCache()
 //                .requestCache(this.getHttpSessionRequestCache())
 //                .and()
+                .formLogin()
+                .successHandler(authenticationSuccessHandler)
+                .failureHandler(authenticationFailureHandler)
+                .loginPage(securityConfig.getLoginUrl())
+                .and()
                 .logout().logoutSuccessHandler(logoutSuccessHandler).logoutUrl(securityConfig.getLogoutUrl())
-                .logoutSuccessUrl(securityConfig.getLogoutSuccessUrl()).permitAll().and().rememberMe()
-                .rememberMeServices(rememberMeServices).and().formLogin().successHandler(authenticationSuccessHandler)
-                .failureHandler(authenticationFailureHandler).loginPage(securityConfig.getLoginUrl()).and()
-                .apply(new SpringSocialConfigurer()).and().apply(new SpringSecurityCaptchaConfigurer());
+                .logoutSuccessUrl(securityConfig.getLogoutSuccessUrl()).permitAll()
+                .and()
+                .rememberMe()
+                .rememberMeServices(rememberMeServices)
+                .and()
+                .apply(new SpringSocialConfigurer())
+                .and()
+                .apply(new SpringSecurityCaptchaConfigurer()); */
     }
 
     @Override

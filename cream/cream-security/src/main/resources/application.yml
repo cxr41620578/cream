@@ -20,7 +20,7 @@ spring:
      request-context-attribute: request
      suffix: .ftl
   datasource:
-    url: jdbc:mysql://localhost:3306/cream?characterEncoding=utf8&useSSL=false&useAffectedRows=true&serverTimezone=GMT%2B8
+    url: jdbc:mysql://localhost:3306/cream?characterEncoding=utf8&useSSL=false&useAffectedRows=true&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
     userName: root
     password: root
     driverClassName: com.mysql.cj.jdbc.Driver
@@ -82,8 +82,8 @@ spring:
       enabled: true
   social:
     qq:
-      client-id: 101561408
-      secret: 6733f60616f9118688a2f6e417ab19c6
+      clientId: 101561408
+      clientSecret: 6733f60616f9118688a2f6e417ab19c6
   session:
     storeType: redis
     redis:
@@ -93,6 +93,7 @@ mybatis-plus:
   typeAliasesPackage: com.cream.*.entity*
   typeEnumsPackage: com.cream.core.base.enums
 logging:
+  path: D:/logs/cream.log
   level:
     org.hibernate.type.descriptor.sql.BasicBinder: trace
     log4j.logger.org.springframework.transaction: info

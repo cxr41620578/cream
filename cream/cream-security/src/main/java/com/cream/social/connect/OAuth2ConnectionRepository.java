@@ -23,14 +23,13 @@ import org.springframework.util.Assert;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import com.cream.security.entity.SysUser;
 import com.cream.social.entity.SysUserConnection;
 import com.cream.social.entity.SysUserConnectionKey;
 import com.cream.social.projection.ISelectFromUserConnection;
 import com.cream.social.service.ISysUserConnectionService;
 
 /**
- * @author v-chenxr04
+ * @author cream
  *
  */
 public class OAuth2ConnectionRepository implements ConnectionRepository {

@@ -63,8 +63,7 @@ public interface ISysUserConnectionRepository extends IBaseRepository<SysUserCon
      * @param userId
      * @return
      */
-    @Query("FROM SysUserConnection WHERE userId = :userId ORDER BY providerId, rank")
-    List<ISelectFromUserConnection> findAllByUserId(Long userId);
+    List<ISelectFromUserConnection> findByUserIdOrderByProviderIdAscRank(Long userId);
 
     /**
      * 查询用户下某个社交链接信息
@@ -72,8 +71,7 @@ public interface ISysUserConnectionRepository extends IBaseRepository<SysUserCon
      * @param providerId
      * @return
      */
-    @Query("FROM SysUserConnection WHERE userId = :userId AND providerId = :providerId ORDER BY rank")
-    List<ISelectFromUserConnection> findByUserIdAndProviderId(Long userId, String providerId);
+    List<ISelectFromUserConnection> findByUserIdAndProviderIdOrderByRank(Long userId, String providerId);
     
     /**
      * 根据主键查询
@@ -81,7 +79,7 @@ public interface ISysUserConnectionRepository extends IBaseRepository<SysUserCon
      * @return
      */
 //    @Query("FROM SysUserConnection WHERE userId = :#{#sysUserConnectionKey.userId} AND providerId = :#{#sysUserConnectionKey.providerId} AND providerUserId = :#{#sysUserConnectionKey.providerUserId}")
-    ISelectFromUserConnection getOne(SysUserConnectionKey sysUserConnectionKey);
+    ISelectFromUserConnection findPayloadByUserIdAndProviderIdAndProviderUserId(Long userId, String providerId, String providerUserId);
     
     @Query("DELETE FROM SysUserConnection WHERE userId = :userId AND providerId = :providerId")
     @Modifying

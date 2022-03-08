@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
      */
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    public ServerResponse<?> handleHttpRequestMethodNotSupportedException(HttpMessageNotReadableException e) {
+    public ServerResponse<?> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
         return ServerResponse.error("不支持当前请求方法");
     }
     
@@ -67,8 +67,10 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public ServerResponse<?> handleException(Exception e) {
-        e.printStackTrace();
         if (e instanceof BusinessException){
+            if (log.isDebugEnabled()) {
+                log.debug(e.getMessage(), e);
+            }
             BusinessException businessException = (BusinessException) e;
             return ServerResponse.error(businessException.getCode(), e.getMessage());
         } else {

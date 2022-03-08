@@ -15,6 +15,4 @@ public interface UserPayload {
     long getId();
 
     String getUserPassword();
-
-    String getUsername();
 }

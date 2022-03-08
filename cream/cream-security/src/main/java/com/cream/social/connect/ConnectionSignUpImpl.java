@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package com.cream.social.connect;
 
 import java.util.Date;
@@ -10,6 +13,10 @@ import org.springframework.stereotype.Component;
 import com.cream.security.entity.SysUser;
 import com.cream.security.service.ISysUserService;
 
+/**
+ * @author cream
+ *
+ */
 @Component
 public class ConnectionSignUpImpl implements ConnectionSignUp {
 

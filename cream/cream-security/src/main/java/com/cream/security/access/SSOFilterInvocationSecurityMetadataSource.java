@@ -35,7 +35,7 @@ public class SSOFilterInvocationSecurityMetadataSource implements FilterInvocati
         Collection<ConfigAttribute> configAttributes = new ArrayList<ConfigAttribute>(); 
         configAttributes.addAll(filterInvocationSecurityMetadataSource.getAttributes(object));
         FilterInvocation fi = (FilterInvocation) object;
-        Set<Long> roleIds = sysPermissionService.findByUrlAndHttpMethod(fi.getRequestUrl(),
+        Set<Long> roleIds = sysPermissionService.findRoleIdByHttpUrlAndHttpMethod(fi.getRequestUrl(),
                 fi.getRequest().getMethod());
         roleIds.stream().forEach(id -> {
             configAttributes.add(new SecurityConfig("ROLE_" + id));
@@ -45,7 +45,12 @@ public class SSOFilterInvocationSecurityMetadataSource implements FilterInvocati
 
     @Override
     public Collection<ConfigAttribute> getAllConfigAttributes() {
-        return null;
+        Collection<ConfigAttribute> configAttributes = filterInvocationSecurityMetadataSource.getAllConfigAttributes();
+        Set<Long> roleIds = sysPermissionService.findAllRoleId();
+        roleIds.stream().forEach(id -> {
+            configAttributes.add(new SecurityConfig("ROLE_" + id));
+        });
+        return configAttributes;
     }
 
     @Override

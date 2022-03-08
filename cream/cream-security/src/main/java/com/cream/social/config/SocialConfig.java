@@ -3,8 +3,6 @@
  */
 package com.cream.social.config;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -19,9 +17,9 @@ import org.springframework.social.connect.UsersConnectionRepository;
 import org.springframework.social.security.AuthenticationNameUserIdSource;
 
 import com.cream.social.connect.OAuth2UsersConnectionRepository;
-import com.cream.social.connect.QQConnectionFactory;
-import com.cream.social.properties.SocialProperties;
 import com.cream.social.service.ISysUserConnectionService;
+
+import pers.cream.spring.social.connect.QQConnectionFactory;
 
 /**
  * @author cream
@@ -32,12 +30,6 @@ import com.cream.social.service.ISysUserConnectionService;
 public class SocialConfig extends SocialConfigurerAdapter {
 
     @Autowired
-    private SocialProperties socialProperties;
-    
-    @Autowired
-    private DataSource dataSource;
-
-    @Autowired
     private ISysUserConnectionService sysUserConnectionService;
 
     @Autowired
@@ -46,19 +38,19 @@ public class SocialConfig extends SocialConfigurerAdapter {
     @Override
     public void addConnectionFactories(ConnectionFactoryConfigurer connectionFactoryConfigurer,
             Environment environment) {
-        connectionFactoryConfigurer.addConnectionFactory(new QQConnectionFactory(socialProperties.getClientId(), socialProperties.getSecret()));
+        connectionFactoryConfigurer.addConnectionFactory(new QQConnectionFactory(
+                environment.getProperty("spring.social.qq.clientId"),
+                environment.getProperty("spring.social.qq.clientSecret")
+        ));
     }
     
     @Override
     public UsersConnectionRepository getUsersConnectionRepository(ConnectionFactoryLocator connectionFactoryLocator) {
-//        JdbcUsersConnectionRepository jdbcUsersConnectionRepository = new JdbcUsersConnectionRepository(dataSource, connectionFactoryLocator, Encryptors.noOpText());
-//        jdbcUsersConnectionRepository.setTablePrefix("Sys");
-//        return jdbcUsersConnectionRepository;
         OAuth2UsersConnectionRepository oauth2UsersConnectionRepository = new OAuth2UsersConnectionRepository(connectionFactoryLocator, Encryptors.noOpText(), sysUserConnectionService);
         oauth2UsersConnectionRepository.setConnectionSignUp(connectionSignUp);
         return oauth2UsersConnectionRepository;
     }
-    
+
     @Override
     public UserIdSource getUserIdSource() {
         return new AuthenticationNameUserIdSource();

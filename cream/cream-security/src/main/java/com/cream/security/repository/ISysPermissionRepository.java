@@ -31,7 +31,10 @@ public interface ISysPermissionRepository extends IBaseRepository<SysPermission,
      * @return
      */
     @Query("SELECT sr.id FROM SysPermission sp LEFT JOIN sp.sysRoles sr WHERE sp.httpUrl = ?1 AND sp.httpMethod = ?2")
-    Set<Long> findByHttpUrlAndHttpMethod(String httpUrl, String httpMethod);
+    Set<Long> findRoleIdByHttpUrlAndHttpMethod(String httpUrl, String httpMethod);
+
+    @Query("SELECT sr.id FROM SysPermission sp LEFT JOIN sp.sysRoles sr")
+    Set<Long> findAllRoleId();
 
     default List<SysPermission> findRoleAll() {
         QSysRole qSysRole = QSysRole.sysRole;
